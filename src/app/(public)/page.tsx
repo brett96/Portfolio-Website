@@ -53,7 +53,7 @@ export default async function HomePage() {
         firstEducation={firstEducation}
       />
 
-      <div className="container mx-auto max-w-4xl px-6 py-12 sm:py-16 space-y-16">
+      <div className="container mx-auto max-w-4xl px-6 pt-6 pb-12 sm:pt-8 sm:pb-16 space-y-16">
         {/* About (editable in admin) */}
         {about && (about.title || about.content) && (
           <section id="about">

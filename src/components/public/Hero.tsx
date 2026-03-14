@@ -24,7 +24,7 @@ export function Hero({ hero, resumeUrl }: HeroProps) {
   const showResume = resumeUrl?.trim();
 
   return (
-    <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-muted/60 to-background px-6 py-20 sm:py-28">
+    <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-muted/60 to-background px-6 pt-[3.75rem] pb-8 sm:pt-[5.25rem] sm:pb-10">
       <div className="container relative mx-auto max-w-3xl text-center">
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
           {name}
@@ -80,7 +80,7 @@ export function Hero({ hero, resumeUrl }: HeroProps) {
             href={showResume}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
           >
             <Download className="size-4" />
             Download Resume

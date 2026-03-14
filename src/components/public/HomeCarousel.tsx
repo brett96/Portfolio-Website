@@ -6,9 +6,11 @@
  */
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FolderOpen, Briefcase, GraduationCap, ArrowRight } from "lucide-react";
 import type { Project, Experience, Education } from "@/types";
+import cercaLabsLogo from "@/components/logos/CercaLabsLogo.jpg";
 
 function formatDate(iso: string): string {
   try {
@@ -51,7 +53,8 @@ const SLIDES = [
   },
 ] as const;
 
-const ROTATE_MS = 5000;
+const EDUCATION_DURATION_MS = 5000;
+const EXPERIENCE_PROJECTS_DURATION_MS = 10000;
 
 export function HomeCarousel({
   firstExperience,
@@ -61,15 +64,18 @@ export function HomeCarousel({
   const [index, setIndex] = useState(0);
 
   const goTo = useCallback((i: number) => {
-    setIndex((i + SLIDES.length) % SLIDES.length);
+    setIndex(() => (i + SLIDES.length) % SLIDES.length);
   }, []);
 
   useEffect(() => {
+    const slideId = SLIDES[index].id;
+    const durationMs =
+      slideId === "education" ? EDUCATION_DURATION_MS : EXPERIENCE_PROJECTS_DURATION_MS;
     const t = setInterval(() => {
       setIndex((i) => (i + 1) % SLIDES.length);
-    }, ROTATE_MS);
+    }, durationMs);
     return () => clearInterval(t);
-  }, []);
+  }, [index]);
 
   const slide = SLIDES[index];
   const Icon = slide.icon;
@@ -137,26 +143,51 @@ export function HomeCarousel({
   }
 
   return (
-    <section className="relative mx-auto w-full max-w-4xl px-6 py-12 sm:py-16">
-      <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 shadow-xl">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={slide.id}
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className={`bg-gradient-to-br ${slide.color} p-8 sm:p-12`}
-          >
+    <section className="relative mx-auto w-full max-w-4xl px-6 pt-6 pb-6 sm:pt-8 sm:pb-8">
+      <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 shadow-xl isolate">
+        {/* Fixed-height slide area so transitions don't affect layout or scroll */}
+        <div className="relative min-h-[291px] sm:min-h-[271px]" style={{ contain: "layout" }}>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={slide.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              className={`absolute inset-0 bg-gradient-to-br ${slide.color} pt-8 pr-8 pb-12 pl-8 sm:pt-12 sm:pr-12 sm:pb-16 sm:pl-12`}
+              style={{ contain: "layout paint" }}
+            >
             <Link
               href={slide.href}
-              className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
+              className="group flex h-full flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
             >
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-1 flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex flex-1 flex-col items-start gap-4 sm:flex-row sm:gap-6">
-                  <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-background/80 text-primary">
-                    <Icon className="size-7" />
-                  </div>
+                  {slide.id === "experience" ? (
+                    <div className="flex w-full shrink-0 flex-row flex-nowrap items-center justify-evenly gap-1.5 px-1 py-0.5 sm:w-auto sm:flex-col sm:items-center sm:justify-center sm:gap-8 sm:px-2 sm:py-1">
+                      <span className="flex h-7 items-center sm:h-16 [&_img]:h-full [&_img]:w-auto [&_img]:object-contain">
+                        <Image
+                          src={cercaLabsLogo}
+                          alt="CercaLabs"
+                          className="h-full w-auto object-contain mix-blend-multiply"
+                        />
+                      </span>
+                      <img
+                        src="/logos/neogenomics.svg"
+                        alt="Neogenomics"
+                        className="h-5 w-auto shrink-0 object-contain sm:h-9"
+                      />
+                      <img
+                        src="/logos/sprouts.svg"
+                        alt="Sprouts"
+                        className="h-5 w-auto shrink-0 object-contain sm:h-9"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-background/80 text-primary">
+                      <Icon className="size-7" />
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                       {slide.title}
@@ -174,6 +205,7 @@ export function HomeCarousel({
             </Link>
           </motion.div>
         </AnimatePresence>
+        </div>
 
         <div className="flex items-center justify-between border-t border-border/60 bg-background/40 px-6 py-4">
           <div className="flex gap-2">
