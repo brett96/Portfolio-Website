@@ -103,26 +103,20 @@ export function PublicHeader({ projects }: PublicHeaderProps) {
                       >
                         <button
                           type="button"
-                          onClick={() => {
-                            if (showPopup) {
-                              if (hasUrl) {
-                                window.open(project.url!, "_blank");
-                                setProjectsOpen(false);
-                                setPopupProjectId(null);
-                              } else {
-                                setPopupProjectId(null);
-                              }
-                            } else {
-                              setPopupProjectId(project.id);
-                            }
-                          }}
+                          onClick={() =>
+                            setPopupProjectId((id) =>
+                              id === project.id ? null : project.id
+                            )
+                          }
                           className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground"
                         >
                           {project.title}
                           <ChevronRight
                             className={cn(
                               "size-3.5 shrink-0 transition-transform",
-                              showPopup && "rotate-90"
+                              showPopup
+                                ? "md:rotate-180 -rotate-90"
+                                : "md:rotate-0 rotate-90"
                             )}
                           />
                         </button>
