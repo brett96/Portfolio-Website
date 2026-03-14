@@ -12,10 +12,10 @@ export function Hero() {
           Brett Tomita
         </h1>
         <p className="mt-4 text-xl text-muted-foreground sm:text-2xl">
-          Software Engineer
+          Senior Software Engineer
         </p>
         <p className="mt-6 max-w-xl mx-auto text-base text-muted-foreground/90 leading-relaxed">
-          Building clean, maintainable software. Focused on web applications, tooling, and user experience.
+          Over 10 years of experience building clean, maintainable software
         </p>
       </div>
     </section>

@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Pencil, Trash2, PlusCircle, Loader2 } from "lucide-react";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 
 const defaultExperience: Omit<Experience, "id"> = {
   company: "",
@@ -117,6 +118,7 @@ export default function AdminExperiencePage() {
         toast.success("Experience created");
       }
       setDialogOpen(false);
+      await revalidatePortfolio();
       load();
     } catch (err) {
       toast.error(editingId ? "Failed to update" : "Failed to create");
@@ -130,6 +132,7 @@ export default function AdminExperiencePage() {
     try {
       await deleteExperience(id);
       toast.success("Experience deleted");
+      await revalidatePortfolio();
       load();
     } catch {
       toast.error("Failed to delete");

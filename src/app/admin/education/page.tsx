@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Pencil, Trash2, PlusCircle, Loader2 } from "lucide-react";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 
 const defaultEducation: Omit<Education, "id"> = {
   institution: "",
@@ -122,6 +123,7 @@ export default function AdminEducationPage() {
         toast.success("Education created");
       }
       setDialogOpen(false);
+      await revalidatePortfolio();
       load();
     } catch (err) {
       toast.error(editingId ? "Failed to update" : "Failed to create");
@@ -135,6 +137,7 @@ export default function AdminEducationPage() {
     try {
       await deleteEducation(id);
       toast.success("Education deleted");
+      await revalidatePortfolio();
       load();
     } catch {
       toast.error("Failed to delete");

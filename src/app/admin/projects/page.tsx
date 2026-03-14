@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Pencil, Trash2, PlusCircle, Loader2 } from "lucide-react";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 
 const defaultProject: Omit<Project, "id"> = {
   title: "",
@@ -119,6 +120,7 @@ export default function AdminProjectsPage() {
         toast.success("Project created");
       }
       setDialogOpen(false);
+      await revalidatePortfolio();
       load();
     } catch (err) {
       const message = err instanceof Error ? err.message : editingId ? "Failed to update" : "Failed to create";
@@ -133,6 +135,7 @@ export default function AdminProjectsPage() {
     try {
       await deleteProject(id);
       toast.success("Project deleted");
+      await revalidatePortfolio();
       load();
     } catch {
       toast.error("Failed to delete");
