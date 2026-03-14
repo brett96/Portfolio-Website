@@ -35,12 +35,6 @@ export default function PublicLayout({
             >
               Education
             </a>
-            <a
-              href="/login"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Admin
-            </a>
           </nav>
         </div>
       </header>
