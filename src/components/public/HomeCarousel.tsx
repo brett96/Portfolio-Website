@@ -146,7 +146,7 @@ export function HomeCarousel({
     <section className="relative mx-auto w-full max-w-4xl px-6 pt-6 pb-6 sm:pt-8 sm:pb-8">
       <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 shadow-xl isolate">
         {/* Fixed-height slide area so transitions don't affect layout or scroll */}
-        <div className="relative min-h-[291px] sm:min-h-[271px]" style={{ contain: "layout" }}>
+        <div className="relative min-h-[306px] sm:min-h-[285px]" style={{ contain: "layout" }}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={slide.id}
@@ -154,7 +154,7 @@ export function HomeCarousel({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.35, ease: "easeInOut" }}
-              className={`absolute inset-0 bg-gradient-to-br ${slide.color} pt-8 pr-8 pb-12 pl-8 sm:pt-12 sm:pr-12 sm:pb-16 sm:pl-12`}
+              className={`absolute inset-0 bg-gradient-to-br ${slide.color} pt-10 pr-8 pb-10 pl-8 sm:pt-12 sm:pr-12 sm:pb-12 sm:pl-12`}
               style={{ contain: "layout paint" }}
             >
             <Link
@@ -164,8 +164,8 @@ export function HomeCarousel({
               <div className="flex flex-1 flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex flex-1 flex-col items-start gap-4 sm:flex-row sm:gap-6">
                   {slide.id === "experience" ? (
-                    <div className="flex w-full shrink-0 flex-row flex-nowrap items-center justify-evenly gap-1.5 px-1 py-0.5 sm:w-auto sm:flex-col sm:items-center sm:justify-center sm:gap-8 sm:px-2 sm:py-1">
-                      <span className="flex h-7 items-center sm:h-16 [&_img]:h-full [&_img]:w-auto [&_img]:object-contain">
+                    <div className="flex w-full shrink-0 flex-row flex-nowrap items-center justify-evenly gap-1.5 px-1 py-0.5 sm:mt-[-0.75rem] sm:w-auto sm:flex-col sm:items-center sm:justify-center sm:gap-8 sm:px-2 sm:py-1">
+                      <span className="flex h-10 items-center sm:h-[5.6rem] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain">
                         <Image
                           src={cercaLabsLogo}
                           alt="CercaLabs"

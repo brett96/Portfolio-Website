@@ -47,7 +47,7 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
   }, [popupProjectId]);
 
   return (
-    <header className="sticky top-0 z-10 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="sticky top-0 z-10 overflow-visible border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container mx-auto flex h-14 max-w-4xl items-center justify-between px-6">
         <Link
           href="/"
@@ -59,8 +59,14 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
           <div className="relative" ref={projectsRef}>
             <button
               type="button"
-              onClick={() => setProjectsOpen((o) => !o)}
-              onMouseEnter={() => setProjectsOpen(true)}
+              onClick={() => {
+                setExperienceOpen(false);
+                setProjectsOpen((o) => !o);
+              }}
+              onMouseEnter={() => {
+                setExperienceOpen(false);
+                setProjectsOpen(true);
+              }}
               className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
               aria-expanded={projectsOpen}
               aria-haspopup="true"
@@ -72,7 +78,7 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
             </button>
             {projectsOpen && (
               <div
-                className="absolute top-full right-0 mt-1 max-h-[min(85vh,28rem)] min-w-[280px] w-[calc(100vw-2rem)] max-w-[360px] overflow-y-auto rounded-xl border border-border bg-popover py-2 shadow-lg z-50 md:left-0 md:right-auto md:max-h-none md:min-w-[220px] md:w-auto md:max-w-none md:rounded-lg md:py-1"
+                className="fixed top-14 left-4 right-4 z-[100] max-h-[calc(100svh-5.5rem)] overflow-y-auto rounded-xl border border-border bg-popover py-3 shadow-xl md:absolute md:top-full md:left-0 md:right-auto md:mt-1 md:max-h-[min(85vh,28rem)] md:min-w-[220px] md:w-auto md:max-w-none md:rounded-lg md:py-1 md:shadow-lg"
               >
                 {projects.length === 0 ? (
                   <div className="px-4 py-3 text-sm text-muted-foreground md:px-3 md:py-2">
@@ -215,15 +221,23 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
               })()}
           </div>
           <div className="relative" ref={experienceRef}>
-            <button
-              type="button"
-              onClick={() => setExperienceOpen((o) => !o)}
-              onMouseEnter={() => setExperienceOpen(true)}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              aria-expanded={experienceOpen}
-              aria-haspopup="true"
-            >
-              Experience
+<button
+            type="button"
+            onClick={() => {
+              setProjectsOpen(false);
+              setPopupProjectId(null);
+              setExperienceOpen((o) => !o);
+            }}
+            onMouseEnter={() => {
+              setProjectsOpen(false);
+              setPopupProjectId(null);
+              setExperienceOpen(true);
+            }}
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            aria-expanded={experienceOpen}
+            aria-haspopup="true"
+          >
+            Experience
               <ChevronDown
                 className={cn("size-4 transition-transform", experienceOpen && "rotate-180")}
               />
