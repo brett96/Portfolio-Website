@@ -56,7 +56,7 @@ export function PublicHeader({ projects }: PublicHeaderProps) {
             </button>
             {projectsOpen && (
               <div
-                className="absolute top-full left-0 mt-1 min-w-[220px] rounded-lg border border-border bg-popover py-1 shadow-lg z-50"
+                className="absolute top-full left-0 mt-1 max-h-[min(70vh,24rem)] min-w-[220px] overflow-y-auto rounded-lg border border-border bg-popover py-1 shadow-lg z-50 md:max-h-none"
                 onMouseLeave={() => setPopupProjectId(null)}
               >
                 {projects.length === 0 ? (

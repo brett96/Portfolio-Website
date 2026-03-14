@@ -2,7 +2,7 @@
  * Hero section: name, tagline, short intro. Optional Download Resume button.
  */
 import type { HeroContent } from "@/types";
-import { Download } from "lucide-react";
+import { Download, Github, Linkedin } from "lucide-react";
 
 const DEFAULTS: HeroContent = {
   name: "Brett Tomita",
@@ -25,13 +25,53 @@ export function Hero({ hero, resumeUrl }: HeroProps) {
 
   return (
     <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-muted/60 to-background px-6 py-20 sm:py-28">
-      <div className="container mx-auto max-w-3xl text-center">
+      <div className="container relative mx-auto max-w-3xl text-center">
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
           {name}
         </h1>
+        <div className="absolute top-1/2 right-0 hidden -translate-y-1/2 items-center gap-2 md:flex">
+          <a
+            href="https://github.com/brett96"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            aria-label="GitHub"
+          >
+            <Github className="size-6 sm:size-7" />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/brett-tomita-9186a615a"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            aria-label="LinkedIn"
+          >
+            <Linkedin className="size-6 sm:size-7" />
+          </a>
+        </div>
         <p className="mt-4 text-xl text-muted-foreground sm:text-2xl">
           {tagline}
         </p>
+        <div className="mt-4 flex justify-center gap-2 md:hidden">
+          <a
+            href="https://github.com/brett96"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            aria-label="GitHub"
+          >
+            <Github className="size-6 sm:size-7" />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/brett-tomita-9186a615a"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            aria-label="LinkedIn"
+          >
+            <Linkedin className="size-6 sm:size-7" />
+          </a>
+        </div>
         <p className="mt-6 max-w-xl mx-auto text-base text-muted-foreground/90 leading-relaxed">
           {description}
         </p>
