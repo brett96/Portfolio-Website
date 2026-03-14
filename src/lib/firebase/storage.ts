@@ -24,3 +24,12 @@ export async function uploadProjectImage(
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
 }
+
+/** Upload resume file to Storage (resume/ path). Overwrites existing. Returns download URL. */
+export async function uploadResume(file: File): Promise<string> {
+  if (!storage) throw new Error("Firebase Storage not configured");
+  const ext = file.name.replace(/^.*\./, "") || "pdf";
+  const storageRef = ref(storage, `resume/resume.${ext}`);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
+}

@@ -11,16 +11,24 @@ import {
   updateDoc,
   deleteDoc,
   getDocs,
+  getDoc,
+  setDoc,
   query,
   orderBy,
   type DocumentData,
 } from "firebase/firestore";
 import { db } from "./config";
-import type { Project, Experience, Education } from "@/types";
+import type { Project, Experience, Education, About, HeroContent, Resume } from "@/types";
 
 const PROJECTS = "projects";
 const EXPERIENCE = "experience";
 const EDUCATION = "education";
+const ABOUT_COLLECTION = "about";
+const ABOUT_DOC_ID = "main";
+const HERO_COLLECTION = "hero";
+const HERO_DOC_ID = "main";
+const RESUME_COLLECTION = "resume";
+const RESUME_DOC_ID = "main";
 
 /** Firestore does not accept undefined; strip undefined keys before write. */
 function stripUndefined<T extends Record<string, unknown>>(obj: T): DocumentData {
@@ -121,4 +129,46 @@ export async function fetchEducationClient(): Promise<Education[]> {
     query(collection(db, EDUCATION), orderBy("order", "asc"))
   );
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Education));
+}
+
+/** Fetch About content (client-side, for admin). */
+export async function fetchAboutClient(): Promise<About | null> {
+  if (!db) return null;
+  const snap = await getDoc(doc(db, ABOUT_COLLECTION, ABOUT_DOC_ID));
+  if (!snap.exists()) return null;
+  return snap.data() as About;
+}
+
+/** Set About content (create or overwrite). */
+export async function setAbout(data: About): Promise<void> {
+  if (!db) throw new Error("Firebase not configured");
+  await setDoc(doc(db, ABOUT_COLLECTION, ABOUT_DOC_ID), stripUndefined(data as Record<string, unknown>));
+}
+
+/** Fetch Hero/site header content (client-side, for admin). */
+export async function fetchHeroClient(): Promise<HeroContent | null> {
+  if (!db) return null;
+  const snap = await getDoc(doc(db, HERO_COLLECTION, HERO_DOC_ID));
+  if (!snap.exists()) return null;
+  return snap.data() as HeroContent;
+}
+
+/** Set Hero/site header content (create or overwrite). */
+export async function setHero(data: HeroContent): Promise<void> {
+  if (!db) throw new Error("Firebase not configured");
+  await setDoc(doc(db, HERO_COLLECTION, HERO_DOC_ID), stripUndefined(data as Record<string, unknown>));
+}
+
+/** Fetch Resume URL (client-side, for admin). */
+export async function fetchResumeClient(): Promise<Resume | null> {
+  if (!db) return null;
+  const snap = await getDoc(doc(db, RESUME_COLLECTION, RESUME_DOC_ID));
+  if (!snap.exists()) return null;
+  return snap.data() as Resume;
+}
+
+/** Set Resume URL (create or overwrite). Use empty string to clear. */
+export async function setResume(data: Resume): Promise<void> {
+  if (!db) throw new Error("Firebase not configured");
+  await setDoc(doc(db, RESUME_COLLECTION, RESUME_DOC_ID), stripUndefined(data as Record<string, unknown>));
 }

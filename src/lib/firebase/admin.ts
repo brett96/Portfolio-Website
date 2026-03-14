@@ -10,7 +10,7 @@
  */
 
 import * as admin from "firebase-admin";
-import type { Project, Experience, Education } from "@/types";
+import type { Project, Experience, Education, About, HeroContent, Resume } from "@/types";
 
 /** Returns null when env vars are missing (e.g. during build). Avoids build failure. */
 function getAdminApp(): admin.app.App | null {
@@ -82,6 +82,12 @@ function serializeTimestamps<T>(obj: T): T {
 const PROJECTS = "projects";
 const EXPERIENCE = "experience";
 const EDUCATION = "education";
+const ABOUT_COLLECTION = "about";
+const ABOUT_DOC_ID = "main";
+const HERO_COLLECTION = "hero";
+const HERO_DOC_ID = "main";
+const RESUME_COLLECTION = "resume";
+const RESUME_DOC_ID = "main";
 
 /**
  * Fetch all projects from Firestore (server-side). Returns data with Timestamps
@@ -139,5 +145,53 @@ export async function getEducation(): Promise<Education[]> {
     });
   } catch {
     return [];
+  }
+}
+
+/**
+ * Fetch the About section content (server-side). Single document at about/main.
+ */
+export async function getAbout(): Promise<About | null> {
+  const db = getAdminDb();
+  if (!db) return null;
+  try {
+    const snap = await db.collection(ABOUT_COLLECTION).doc(ABOUT_DOC_ID).get();
+    if (!snap.exists) return null;
+    const data = snap.data();
+    return data ? (serializeTimestamps(data) as About) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetch the site hero/header content (server-side). Single document at hero/main.
+ */
+export async function getHero(): Promise<HeroContent | null> {
+  const db = getAdminDb();
+  if (!db) return null;
+  try {
+    const snap = await db.collection(HERO_COLLECTION).doc(HERO_DOC_ID).get();
+    if (!snap.exists) return null;
+    const data = snap.data();
+    return data ? (serializeTimestamps(data) as HeroContent) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetch resume download URL (server-side). Single document at resume/main.
+ */
+export async function getResume(): Promise<Resume | null> {
+  const db = getAdminDb();
+  if (!db) return null;
+  try {
+    const snap = await db.collection(RESUME_COLLECTION).doc(RESUME_DOC_ID).get();
+    if (!snap.exists) return null;
+    const data = snap.data();
+    return data ? (serializeTimestamps(data) as Resume) : null;
+  } catch {
+    return null;
   }
 }

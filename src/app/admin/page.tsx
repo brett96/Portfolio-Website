@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getProjects, getExperience, getEducation } from "@/lib/firebase/admin";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, Briefcase, GraduationCap, ArrowRight } from "lucide-react";
+import { FolderOpen, Briefcase, GraduationCap, ArrowRight, FileText, Type, FileDown } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   const [projects, experience, education] = await Promise.all([
@@ -12,9 +12,12 @@ export default async function AdminDashboardPage() {
   ]);
 
   const links = [
+    { href: "/admin/hero", label: "Site header", count: null, icon: Type },
     { href: "/admin/projects", label: "Projects", count: projects.length, icon: FolderOpen },
     { href: "/admin/experience", label: "Experience", count: experience.length, icon: Briefcase },
     { href: "/admin/education", label: "Education", count: education.length, icon: GraduationCap },
+    { href: "/admin/about", label: "About", count: null, icon: FileText },
+    { href: "/admin/resume", label: "Resume", count: null, icon: FileDown },
   ];
 
   return (
@@ -36,8 +39,14 @@ export default async function AdminDashboardPage() {
               <Icon className="size-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{count}</p>
-              <p className="text-xs text-muted-foreground">entries</p>
+              {count !== null ? (
+                <>
+                  <p className="text-2xl font-bold">{count}</p>
+                  <p className="text-xs text-muted-foreground">entries</p>
+                </>
+              ) : (
+                <p className="text-xs text-muted-foreground">Home page section</p>
+              )}
               <Link
                 href={href}
                 className="mt-4 flex h-7 w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-2.5 text-[0.8rem] font-medium hover:bg-muted hover:text-foreground"

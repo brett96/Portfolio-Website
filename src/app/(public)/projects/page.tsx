@@ -25,7 +25,7 @@ export default async function ProjectsPage() {
       </Link>
       <SectionHeading
         title="Projects"
-        description="Selected work and side projects."
+        description="Selected work and side projects"
       />
       {projects.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2">

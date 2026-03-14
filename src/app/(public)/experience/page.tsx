@@ -25,7 +25,7 @@ export default async function ExperiencePage() {
       </Link>
       <SectionHeading
         title="Experience"
-        description="Work history and roles."
+        description="Work history and roles"
       />
       {experience.length > 0 ? (
         <ExperienceList items={experience} />

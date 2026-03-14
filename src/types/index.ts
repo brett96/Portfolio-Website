@@ -36,3 +36,21 @@ export interface Education {
   order?: number;
   createdAt?: string;
 }
+
+/** Single editable About section (one document in Firestore). */
+export interface About {
+  title: string;
+  content: string;
+}
+
+/** Main site hero/header (name, tagline, short description). */
+export interface HeroContent {
+  name: string;
+  tagline: string;
+  description: string;
+}
+
+/** Resume download URL (stored in Firestore; file in Storage). */
+export interface Resume {
+  url: string;
+}

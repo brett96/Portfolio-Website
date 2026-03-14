@@ -25,7 +25,7 @@ export default async function EducationPage() {
       </Link>
       <SectionHeading
         title="Education"
-        description="Academic background."
+        description="Academic background"
       />
       {education.length > 0 ? (
         <EducationList items={education} />

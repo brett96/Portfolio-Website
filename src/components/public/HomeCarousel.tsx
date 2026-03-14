@@ -1,19 +1,34 @@
 "use client";
 
 /**
- * Homepage carousel: Experience, Projects, and Education sections that rotate
- * (Experience first) and are clickable to navigate to their detail pages.
+ * Homepage carousel: Experience, Projects, Education (Experience first). Each slide
+ * shows the section title and the first/primary entry details, with a link to the full section.
  */
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FolderOpen, Briefcase, GraduationCap, ArrowRight } from "lucide-react";
+import type { Project, Experience, Education } from "@/types";
+
+function formatDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  } catch {
+    return iso;
+  }
+}
+
+interface HomeCarouselProps {
+  firstExperience?: Experience | null;
+  firstProject?: Project | null;
+  firstEducation?: Education | null;
+}
 
 const SLIDES = [
   {
     id: "experience",
     title: "Experience",
-    description: "Work history and roles.",
+    description: "Work history and roles",
     href: "/experience",
     icon: Briefcase,
     color: "from-chart-2/20 to-chart-2/5",
@@ -21,7 +36,7 @@ const SLIDES = [
   {
     id: "projects",
     title: "Projects",
-    description: "Selected work and side projects.",
+    description: "Selected work and side projects",
     href: "/projects",
     icon: FolderOpen,
     color: "from-primary/20 to-primary/5",
@@ -29,7 +44,7 @@ const SLIDES = [
   {
     id: "education",
     title: "Education",
-    description: "Academic background.",
+    description: "Academic background",
     href: "/education",
     icon: GraduationCap,
     color: "from-chart-3/20 to-chart-3/5",
@@ -38,7 +53,11 @@ const SLIDES = [
 
 const ROTATE_MS = 5000;
 
-export function HomeCarousel() {
+export function HomeCarousel({
+  firstExperience,
+  firstProject,
+  firstEducation,
+}: HomeCarouselProps) {
   const [index, setIndex] = useState(0);
 
   const goTo = useCallback((i: number) => {
@@ -54,6 +73,68 @@ export function HomeCarousel() {
 
   const slide = SLIDES[index];
   const Icon = slide.icon;
+
+  function SlideContent() {
+    if (slide.id === "experience" && firstExperience) {
+      return (
+        <div className="text-left">
+          <p className="font-semibold text-foreground">{firstExperience.company}</p>
+          <p className="text-sm text-muted-foreground">{firstExperience.role}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {formatDate(firstExperience.startDate)}
+            {firstExperience.endDate ? ` – ${formatDate(firstExperience.endDate)}` : " – Present"}
+          </p>
+          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/90">
+            {firstExperience.description}
+          </p>
+        </div>
+      );
+    }
+    if (slide.id === "projects" && firstProject) {
+      return (
+        <div className="text-left">
+          {firstProject.imageUrl && (
+            <div className="mb-3 aspect-video w-full max-w-xs overflow-hidden rounded-lg bg-muted">
+              <img src={firstProject.imageUrl} alt="" className="h-full w-full object-cover" />
+            </div>
+          )}
+          <p className="font-semibold text-foreground">{firstProject.title}</p>
+          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-foreground/90">
+            {firstProject.description}
+          </p>
+          {firstProject.tags && firstProject.tags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {firstProject.tags.slice(0, 4).map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-md bg-background/60 px-2 py-0.5 text-xs text-muted-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+    if (slide.id === "education" && firstEducation) {
+      return (
+        <div className="text-left">
+          <p className="font-semibold text-foreground">{firstEducation.institution}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {firstEducation.degree} in {firstEducation.field}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {firstEducation.startYear} – {firstEducation.endYear}
+          </p>
+          {firstEducation.honors && (
+            <p className="mt-2 text-sm font-medium text-primary">{firstEducation.honors}</p>
+          )}
+        </div>
+      );
+    }
+    return <p className="text-sm text-muted-foreground">{slide.description}</p>;
+  }
 
   return (
     <section className="relative mx-auto w-full max-w-4xl px-6 py-12 sm:py-16">
@@ -71,19 +152,21 @@ export function HomeCarousel() {
               href={slide.href}
               className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
             >
-              <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-start gap-4">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex flex-1 flex-col items-start gap-4 sm:flex-row sm:gap-6">
                   <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-background/80 text-primary">
                     <Icon className="size-7" />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                       {slide.title}
                     </h2>
-                    <p className="mt-2 text-muted-foreground">{slide.description}</p>
+                    <div className="mt-4">
+                      <SlideContent />
+                    </div>
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-2 rounded-lg border border-border/80 bg-background/60 px-4 py-2.5 text-sm font-medium text-foreground transition-colors group-hover:border-primary/50 group-hover:bg-primary/10">
+                <span className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border/80 bg-background/60 px-4 py-2.5 text-sm font-medium text-foreground transition-colors group-hover:border-primary/50 group-hover:bg-primary/10">
                   View more
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
@@ -92,7 +175,6 @@ export function HomeCarousel() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Dots + nav */}
         <div className="flex items-center justify-between border-t border-border/60 bg-background/40 px-6 py-4">
           <div className="flex gap-2">
             {SLIDES.map((s, i) => (
