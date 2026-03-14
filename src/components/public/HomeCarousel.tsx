@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * Homepage carousel: three sections (Projects, Experience, Education) that rotate
- * and are clickable to navigate to their detail pages. Uses framer-motion for transitions.
+ * Homepage carousel: Experience, Projects, and Education sections that rotate
+ * (Experience first) and are clickable to navigate to their detail pages.
  */
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
@@ -11,20 +11,20 @@ import { FolderOpen, Briefcase, GraduationCap, ArrowRight } from "lucide-react";
 
 const SLIDES = [
   {
-    id: "projects",
-    title: "Projects",
-    description: "Selected work and side projects.",
-    href: "/projects",
-    icon: FolderOpen,
-    color: "from-primary/20 to-primary/5",
-  },
-  {
     id: "experience",
     title: "Experience",
     description: "Work history and roles.",
     href: "/experience",
     icon: Briefcase,
     color: "from-chart-2/20 to-chart-2/5",
+  },
+  {
+    id: "projects",
+    title: "Projects",
+    description: "Selected work and side projects.",
+    href: "/projects",
+    icon: FolderOpen,
+    color: "from-primary/20 to-primary/5",
   },
   {
     id: "education",
