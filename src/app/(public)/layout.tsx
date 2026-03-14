@@ -29,7 +29,7 @@ export default async function PublicLayout({
               <span>© {new Date().getFullYear()}</span>
               <span>Brett Tomita</span>
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 sm:justify-normal">
               <a
                 href="https://github.com/brett96"
                 target="_blank"
