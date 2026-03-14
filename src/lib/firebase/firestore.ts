@@ -40,14 +40,14 @@ function stripUndefined<T extends Record<string, unknown>>(obj: T): DocumentData
 /** Create a project. Returns the new document id. Throws if Firebase not configured. */
 export async function createProject(data: Omit<Project, "id">): Promise<string> {
   if (!db) throw new Error("Firebase not configured");
-  const ref = await addDoc(collection(db, PROJECTS), stripUndefined(data as Record<string, unknown>));
+  const ref = await addDoc(collection(db, PROJECTS), stripUndefined(data as unknown as Record<string, unknown>));
   return ref.id;
 }
 
 /** Update a project by id. */
 export async function updateProject(id: string, data: Partial<Omit<Project, "id">>): Promise<void> {
   if (!db) throw new Error("Firebase not configured");
-  await updateDoc(doc(db, PROJECTS, id), stripUndefined(data as Record<string, unknown>));
+  await updateDoc(doc(db, PROJECTS, id), stripUndefined(data as unknown as Record<string, unknown>));
 }
 
 /** Delete a project by id. */
@@ -70,7 +70,7 @@ export async function createExperience(
   data: Omit<Experience, "id">
 ): Promise<string> {
   if (!db) throw new Error("Firebase not configured");
-  const ref = await addDoc(collection(db, EXPERIENCE), stripUndefined(data as Record<string, unknown>));
+  const ref = await addDoc(collection(db, EXPERIENCE), stripUndefined(data as unknown as Record<string, unknown>));
   return ref.id;
 }
 
@@ -80,7 +80,7 @@ export async function updateExperience(
   data: Partial<Omit<Experience, "id">>
 ): Promise<void> {
   if (!db) throw new Error("Firebase not configured");
-  await updateDoc(doc(db, EXPERIENCE, id), stripUndefined(data as Record<string, unknown>));
+  await updateDoc(doc(db, EXPERIENCE, id), stripUndefined(data as unknown as Record<string, unknown>));
 }
 
 /** Delete an experience entry by id. */
@@ -103,7 +103,7 @@ export async function createEducation(
   data: Omit<Education, "id">
 ): Promise<string> {
   if (!db) throw new Error("Firebase not configured");
-  const ref = await addDoc(collection(db, EDUCATION), stripUndefined(data as Record<string, unknown>));
+  const ref = await addDoc(collection(db, EDUCATION), stripUndefined(data as unknown as Record<string, unknown>));
   return ref.id;
 }
 
@@ -113,7 +113,7 @@ export async function updateEducation(
   data: Partial<Omit<Education, "id">>
 ): Promise<void> {
   if (!db) throw new Error("Firebase not configured");
-  await updateDoc(doc(db, EDUCATION, id), stripUndefined(data as Record<string, unknown>));
+  await updateDoc(doc(db, EDUCATION, id), stripUndefined(data as unknown as Record<string, unknown>));
 }
 
 /** Delete an education entry by id. */
@@ -142,7 +142,7 @@ export async function fetchAboutClient(): Promise<About | null> {
 /** Set About content (create or overwrite). */
 export async function setAbout(data: About): Promise<void> {
   if (!db) throw new Error("Firebase not configured");
-  await setDoc(doc(db, ABOUT_COLLECTION, ABOUT_DOC_ID), stripUndefined(data as Record<string, unknown>));
+  await setDoc(doc(db, ABOUT_COLLECTION, ABOUT_DOC_ID), stripUndefined(data as unknown as Record<string, unknown>));
 }
 
 /** Fetch Hero/site header content (client-side, for admin). */
@@ -156,7 +156,7 @@ export async function fetchHeroClient(): Promise<HeroContent | null> {
 /** Set Hero/site header content (create or overwrite). */
 export async function setHero(data: HeroContent): Promise<void> {
   if (!db) throw new Error("Firebase not configured");
-  await setDoc(doc(db, HERO_COLLECTION, HERO_DOC_ID), stripUndefined(data as Record<string, unknown>));
+  await setDoc(doc(db, HERO_COLLECTION, HERO_DOC_ID), stripUndefined(data as unknown as Record<string, unknown>));
 }
 
 /** Fetch Resume URL (client-side, for admin). */
@@ -170,5 +170,5 @@ export async function fetchResumeClient(): Promise<Resume | null> {
 /** Set Resume URL (create or overwrite). Use empty string to clear. */
 export async function setResume(data: Resume): Promise<void> {
   if (!db) throw new Error("Firebase not configured");
-  await setDoc(doc(db, RESUME_COLLECTION, RESUME_DOC_ID), stripUndefined(data as Record<string, unknown>));
+  await setDoc(doc(db, RESUME_COLLECTION, RESUME_DOC_ID), stripUndefined(data as unknown as Record<string, unknown>));
 }
