@@ -145,8 +145,8 @@ export function HomeCarousel({
   return (
     <section className="relative mx-auto w-full max-w-4xl px-6 pt-6 pb-6 sm:pt-8 sm:pb-8">
       <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 shadow-xl isolate">
-        {/* Fixed-height slide area so transitions don't affect layout or scroll */}
-        <div className="relative min-h-[306px] sm:min-h-[285px]" style={{ contain: "layout" }}>
+        {/* Slide area: min-height for mobile (logos above); desktop Experience has title+logos in one row so shorter */}
+        <div className="relative min-h-[380px] sm:min-h-[300px]" style={{ contain: "layout" }}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={slide.id}
@@ -161,11 +161,15 @@ export function HomeCarousel({
               href={slide.href}
               className="group flex h-full flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
             >
-              <div className="flex flex-1 flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex flex-1 flex-col items-start gap-4 sm:flex-row sm:gap-6">
-                  {slide.id === "experience" ? (
-                    <div className="flex w-full shrink-0 flex-row flex-nowrap items-center justify-evenly gap-1.5 px-1 py-0.5 sm:mt-[-0.75rem] sm:w-auto sm:flex-col sm:items-center sm:justify-center sm:gap-8 sm:px-2 sm:py-1">
-                      <span className="flex h-10 items-center sm:h-[5.6rem] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain">
+              {slide.id === "experience" ? (
+                <>
+                  {/* Mobile: logos row on top. Desktop: title left, logos right in one row */}
+                  <div className="flex w-full shrink-0 flex-row flex-nowrap items-center justify-center gap-4 py-1 sm:flex-row sm:items-center sm:justify-between sm:py-0 sm:gap-6">
+                    <h2 className="hidden text-2xl font-bold tracking-tight text-foreground sm:block sm:text-3xl">
+                      {slide.title}
+                    </h2>
+                    <div className="flex flex-row flex-nowrap items-center justify-center gap-4 sm:justify-end sm:gap-6">
+                      <span className="flex h-10 items-center sm:h-12 [&_img]:h-full [&_img]:w-auto [&_img]:object-contain">
                         <Image
                           src={cercaLabsLogo}
                           alt="CercaLabs"
@@ -175,33 +179,86 @@ export function HomeCarousel({
                       <img
                         src="/logos/neogenomics.svg"
                         alt="Neogenomics"
-                        className="h-5 w-auto shrink-0 object-contain sm:h-9"
+                        className="h-5 w-auto shrink-0 object-contain sm:h-8"
                       />
                       <img
                         src="/logos/sprouts.svg"
                         alt="Sprouts"
-                        className="h-5 w-auto shrink-0 object-contain sm:h-9"
+                        className="h-5 w-auto shrink-0 object-contain sm:h-8"
                       />
                     </div>
-                  ) : (
+                  </div>
+                  <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-2xl font-bold tracking-tight text-foreground sm:hidden">
+                        {slide.title}
+                      </h2>
+                      <div className="mt-4">
+                        <SlideContent />
+                      </div>
+                    </div>
+                    <span className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border/80 bg-background/60 px-4 py-2.5 text-sm font-medium text-foreground transition-colors group-hover:border-primary/50 group-hover:bg-primary/10">
+                      View more
+                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </div>
+                </>
+              ) : slide.id === "projects" ? (
+                <>
+                  {/* Mobile: logos row on top. Desktop: title left, logos right (MGA first, then lets-eat) */}
+                  <div className="flex w-full shrink-0 flex-row flex-nowrap items-center justify-center gap-4 py-1 sm:flex-row sm:items-center sm:justify-between sm:py-0 sm:gap-6">
+                    <h2 className="hidden text-2xl font-bold tracking-tight text-foreground sm:block sm:text-3xl">
+                      {slide.title}
+                    </h2>
+                    <div className="flex flex-row flex-nowrap items-center justify-center gap-4 sm:justify-end sm:gap-6">
+                      <img
+                        src="/logos/MyGamblingAssistant.png"
+                        alt="My Gambling Assistant"
+                        className="h-10 w-auto shrink-0 object-contain sm:h-12"
+                      />
+                      <img
+                        src="/logos/lets-eat.gif"
+                        alt="Lets Eat"
+                        className="h-10 w-auto shrink-0 object-contain sm:h-12"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-2xl font-bold tracking-tight text-foreground sm:hidden">
+                        {slide.title}
+                      </h2>
+                      <div className="mt-4">
+                        <SlideContent />
+                      </div>
+                    </div>
+                    <span className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border/80 bg-background/60 px-4 py-2.5 text-sm font-medium text-foreground transition-colors group-hover:border-primary/50 group-hover:bg-primary/10">
+                      View more
+                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-1 flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex flex-1 flex-col items-start gap-4 sm:flex-row sm:gap-6">
                     <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-background/80 text-primary">
                       <Icon className="size-7" />
                     </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                      {slide.title}
-                    </h2>
-                    <div className="mt-4">
-                      <SlideContent />
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                        {slide.title}
+                      </h2>
+                      <div className="mt-4">
+                        <SlideContent />
+                      </div>
                     </div>
                   </div>
+                  <span className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border/80 bg-background/60 px-4 py-2.5 text-sm font-medium text-foreground transition-colors group-hover:border-primary/50 group-hover:bg-primary/10">
+                    View more
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
                 </div>
-                <span className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border/80 bg-background/60 px-4 py-2.5 text-sm font-medium text-foreground transition-colors group-hover:border-primary/50 group-hover:bg-primary/10">
-                  View more
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              </div>
+              )}
             </Link>
           </motion.div>
         </AnimatePresence>

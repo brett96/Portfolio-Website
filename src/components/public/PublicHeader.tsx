@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import type { Project, Experience } from "@/types";
 import { cn } from "@/lib/utils";
+import { slugify } from "@/lib/slug";
 import { ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 
 interface PublicHeaderProps {
@@ -24,17 +25,32 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
   const projectsRef = useRef<HTMLDivElement>(null);
   const experienceRef = useRef<HTMLDivElement>(null);
   const activeRowRef = useRef<HTMLDivElement | null>(null);
+  const justOpenedProjectsRef = useRef(false);
+  const justOpenedExperienceRef = useRef(false);
+  const popoverPortalRef = useRef<HTMLDivElement | null>(null);
+  const leaveRowTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       const target = e.target as Node;
       if (projectsRef.current?.contains(target) || experienceRef.current?.contains(target)) return;
+      if (popoverPortalRef.current?.contains(target)) return;
+      if (leaveRowTimeoutRef.current) {
+        clearTimeout(leaveRowTimeoutRef.current);
+        leaveRowTimeoutRef.current = null;
+      }
       setProjectsOpen(false);
       setExperienceOpen(false);
       setPopupProjectId(null);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (leaveRowTimeoutRef.current) clearTimeout(leaveRowTimeoutRef.current);
+    };
   }, []);
 
   useLayoutEffect(() => {
@@ -59,7 +75,18 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
           <div className="relative" ref={projectsRef}>
             <button
               type="button"
+              onPointerDown={(e) => {
+                if (e.pointerType === "touch" && !projectsOpen) {
+                  setExperienceOpen(false);
+                  setProjectsOpen(true);
+                  justOpenedProjectsRef.current = true;
+                }
+              }}
               onClick={() => {
+                if (justOpenedProjectsRef.current) {
+                  justOpenedProjectsRef.current = false;
+                  return;
+                }
                 setExperienceOpen(false);
                 setProjectsOpen((o) => !o);
               }}
@@ -94,23 +121,18 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
                     const itemClass = "flex items-center justify-between gap-2 px-4 py-3 text-base text-popover-foreground hover:bg-accent hover:text-accent-foreground md:px-3 md:py-2 md:text-sm";
                     const mutedClass = "block px-4 py-3 text-base text-muted-foreground md:px-3 md:py-2 md:text-sm";
 
+                    const projectSlug = slugify(project.title);
                     if (!hasDescription) {
-                      return hasUrl ? (
-                        <a
+                      return (
+                        <Link
                           key={project.id}
-                          href={project.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href={`/projects/${projectSlug}`}
                           className={itemClass}
                           onClick={() => setProjectsOpen(false)}
                         >
                           {project.title}
-                          <ExternalLink className="size-4 shrink-0 opacity-70 md:size-3.5" />
-                        </a>
-                      ) : (
-                        <span key={project.id} className={mutedClass}>
-                          {project.title}
-                        </span>
+                          {hasUrl && <ExternalLink className="size-4 shrink-0 opacity-70 md:size-3.5" />}
+                        </Link>
                       );
                     }
 
@@ -119,8 +141,16 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
                         key={project.id}
                         ref={showPopup ? (el) => { activeRowRef.current = el; } : undefined}
                         className="relative border-b border-border/40 last:border-b-0 md:border-b-0"
-                        onMouseEnter={() => setPopupProjectId(project.id)}
-                        onMouseLeave={() => setPopupProjectId(null)}
+                        onMouseEnter={() => {
+                          if (leaveRowTimeoutRef.current) {
+                            clearTimeout(leaveRowTimeoutRef.current);
+                            leaveRowTimeoutRef.current = null;
+                          }
+                          setPopupProjectId(project.id);
+                        }}
+                        onMouseLeave={() => {
+                          leaveRowTimeoutRef.current = setTimeout(() => setPopupProjectId(null), 120);
+                        }}
                       >
                         <button
                           type="button"
@@ -150,25 +180,17 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
                             <p className="text-sm text-popover-foreground leading-relaxed line-clamp-4">
                               {project.description}
                             </p>
-                            {hasUrl ? (
-                              <a
-                                href={project.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="mt-3 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                                onClick={() => {
-                                  setProjectsOpen(false);
-                                  setPopupProjectId(null);
-                                }}
-                              >
-                                View
-                                <ExternalLink className="size-3.5" />
-                              </a>
-                            ) : (
-                              <span className="mt-3 block text-center text-xs text-muted-foreground">
-                                No link
-                              </span>
-                            )}
+                            <Link
+                              href={`/projects/${projectSlug}`}
+                              className="mt-3 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                              onClick={() => {
+                                setProjectsOpen(false);
+                                setPopupProjectId(null);
+                              }}
+                            >
+                              View
+                              <ChevronRight className="size-3.5" />
+                            </Link>
                           </div>
                         )}
                       </div>
@@ -185,36 +207,35 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
               (() => {
                 const project = projects.find((p) => p.id === popupProjectId);
                 if (!project?.description?.trim()) return null;
-                const hasUrl = Boolean(project.url?.trim());
+                const desktopProjectSlug = slugify(project.title);
                 return createPortal(
                   <div
+                    ref={popoverPortalRef}
                     className="hidden md:block fixed z-[100] w-72 rounded-lg border border-border bg-popover p-4 shadow-lg"
                     style={{ top: popoverRect.top, left: popoverRect.left }}
-                    onMouseEnter={() => setPopupProjectId(project.id)}
+                    onMouseEnter={() => {
+                      if (leaveRowTimeoutRef.current) {
+                        clearTimeout(leaveRowTimeoutRef.current);
+                        leaveRowTimeoutRef.current = null;
+                      }
+                      setPopupProjectId(project.id);
+                    }}
                     onMouseLeave={() => setPopupProjectId(null)}
                   >
                     <p className="text-sm text-popover-foreground leading-relaxed line-clamp-4">
                       {project.description}
                     </p>
-                    {hasUrl ? (
-                      <a
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-3 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                        onClick={() => {
-                          setProjectsOpen(false);
-                          setPopupProjectId(null);
-                        }}
-                      >
-                        View
-                        <ExternalLink className="size-3.5" />
-                      </a>
-                    ) : (
-                      <span className="mt-3 block text-center text-xs text-muted-foreground">
-                        No link
-                      </span>
-                    )}
+                    <Link
+                      href={`/projects/${desktopProjectSlug}`}
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                      onClick={() => {
+                        setProjectsOpen(false);
+                        setPopupProjectId(null);
+                      }}
+                    >
+                      View
+                      <ChevronRight className="size-3.5" />
+                    </Link>
                   </div>,
                   document.body
                 );
@@ -223,7 +244,19 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
           <div className="relative" ref={experienceRef}>
 <button
             type="button"
+            onPointerDown={(e) => {
+              if (e.pointerType === "touch" && !experienceOpen) {
+                setProjectsOpen(false);
+                setPopupProjectId(null);
+                setExperienceOpen(true);
+                justOpenedExperienceRef.current = true;
+              }
+            }}
             onClick={() => {
+              if (justOpenedExperienceRef.current) {
+                justOpenedExperienceRef.current = false;
+                return;
+              }
               setProjectsOpen(false);
               setPopupProjectId(null);
               setExperienceOpen((o) => !o);
@@ -266,7 +299,7 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
                     {experience.map((exp) => (
                       <Link
                         key={exp.id}
-                        href="/experience"
+                        href={`/experience/${slugify(exp.company)}`}
                         className="block px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground"
                         onClick={() => setExperienceOpen(false)}
                       >

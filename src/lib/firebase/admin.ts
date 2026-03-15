@@ -11,6 +11,7 @@
 
 import * as admin from "firebase-admin";
 import type { Project, Experience, Education, About, HeroContent, Resume } from "@/types";
+import { slugify } from "@/lib/slug";
 
 /** Returns null when env vars are missing (e.g. during build). Avoids build failure. */
 function getAdminApp(): admin.app.App | null {
@@ -110,6 +111,13 @@ export async function getProjects(): Promise<Project[]> {
   }
 }
 
+/** Find a project by slug (from title). Returns null if not found. */
+export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  const projects = await getProjects();
+  const normalized = slug.toLowerCase();
+  return projects.find((p) => slugify(p.title) === normalized) ?? null;
+}
+
 /**
  * Fetch all experience entries from Firestore (server-side). Returns data with
  * Timestamps converted to ISO strings for safe serialization to client.
@@ -129,6 +137,13 @@ export async function getExperience(): Promise<Experience[]> {
   }
 }
 
+/** Find an experience entry by company slug. Returns null if not found. */
+export async function getExperienceBySlug(slug: string): Promise<Experience | null> {
+  const experience = await getExperience();
+  const normalized = slug.toLowerCase();
+  return experience.find((e) => slugify(e.company) === normalized) ?? null;
+}
+
 /**
  * Fetch all education entries from Firestore (server-side). Returns data with
  * Timestamps converted to ISO strings for safe serialization to client.
@@ -146,6 +161,13 @@ export async function getEducation(): Promise<Education[]> {
   } catch {
     return [];
   }
+}
+
+/** Find an education entry by institution slug. Returns null if not found. */
+export async function getEducationBySlug(slug: string): Promise<Education | null> {
+  const education = await getEducation();
+  const normalized = slug.toLowerCase();
+  return education.find((e) => slugify(e.institution) === normalized) ?? null;
 }
 
 /**
