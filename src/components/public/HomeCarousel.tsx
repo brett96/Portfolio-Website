@@ -56,12 +56,29 @@ const SLIDES = [
 const EDUCATION_DURATION_MS = 5000;
 const EXPERIENCE_PROJECTS_DURATION_MS = 10000;
 
+const PROJECT_LOGO_SRCS = [
+  { src: "/logos/MyGamblingAssistant.png", alt: "My Gambling Assistant" },
+  { src: "/logos/lets-eat.gif", alt: "Lets Eat" },
+] as const;
+
 export function HomeCarousel({
   firstExperience,
   firstProject,
   firstEducation,
 }: HomeCarouselProps) {
   const [index, setIndex] = useState(0);
+  const [projectLogosMayLoad, setProjectLogosMayLoad] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "complete") {
+      setProjectLogosMayLoad(true);
+      return;
+    }
+    const onLoad = () => setProjectLogosMayLoad(true);
+    window.addEventListener("load", onLoad);
+    return () => window.removeEventListener("load", onLoad);
+  }, []);
 
   const goTo = useCallback((i: number) => {
     setIndex(() => (i + SLIDES.length) % SLIDES.length);
@@ -101,7 +118,13 @@ export function HomeCarousel({
         <div className="text-left">
           {firstProject.imageUrl && (
             <div className="mb-3 aspect-video w-full max-w-xs overflow-hidden rounded-lg bg-muted">
-              <img src={firstProject.imageUrl} alt="" className="h-full w-full object-cover" />
+              <img
+                src={firstProject.imageUrl}
+                alt=""
+                className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
           )}
           <p className="font-semibold text-foreground">{firstProject.title}</p>
@@ -180,14 +203,25 @@ export function HomeCarousel({
                         src="/logos/neogenomics.svg"
                         alt="Neogenomics"
                         className="h-5 w-auto shrink-0 object-contain sm:h-8"
+                        decoding="async"
+                        fetchPriority="high"
                       />
                       <img
                         src="/logos/sprouts.svg"
                         alt="Sprouts"
                         className="h-5 w-auto shrink-0 object-contain sm:h-8"
+                        decoding="async"
+                        fetchPriority="high"
                       />
                     </div>
                   </div>
+                  {projectLogosMayLoad && index === 0 && (
+                    <div className="absolute h-0 w-0 overflow-hidden opacity-0" aria-hidden="true">
+                      {PROJECT_LOGO_SRCS.map(({ src, alt }) => (
+                        <img key={src} src={src} alt="" decoding="async" fetchPriority="low" />
+                      ))}
+                    </div>
+                  )}
                   <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div className="min-w-0 flex-1">
                       <h2 className="text-2xl font-bold tracking-tight text-foreground sm:hidden">
@@ -211,16 +245,23 @@ export function HomeCarousel({
                       {slide.title}
                     </h2>
                     <div className="flex flex-row flex-nowrap items-center justify-center gap-4 sm:justify-end sm:gap-6">
-                      <img
-                        src="/logos/MyGamblingAssistant.png"
-                        alt="My Gambling Assistant"
-                        className="h-10 w-auto shrink-0 object-contain sm:h-12"
-                      />
-                      <img
-                        src="/logos/lets-eat.gif"
-                        alt="Lets Eat"
-                        className="h-10 w-auto shrink-0 object-contain sm:h-12"
-                      />
+                      {projectLogosMayLoad
+                        ? PROJECT_LOGO_SRCS.map(({ src, alt }) => (
+                            <img
+                              key={src}
+                              src={src}
+                              alt={alt}
+                              className="h-10 w-auto shrink-0 object-contain sm:h-12"
+                              decoding="async"
+                            />
+                          ))
+                        : PROJECT_LOGO_SRCS.map(({ alt }) => (
+                            <div
+                              key={alt}
+                              className="h-10 w-16 shrink-0 animate-pulse rounded bg-muted/50 sm:h-12 sm:w-20"
+                              aria-hidden="true"
+                            />
+                          ))}
                     </div>
                   </div>
                   <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

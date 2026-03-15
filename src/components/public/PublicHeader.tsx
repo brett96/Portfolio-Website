@@ -27,6 +27,7 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
   const activeRowRef = useRef<HTMLDivElement | null>(null);
   const justOpenedProjectsRef = useRef(false);
   const justOpenedExperienceRef = useRef(false);
+  const justOpenedProjectRowRef = useRef(false);
   const popoverPortalRef = useRef<HTMLDivElement | null>(null);
   const leaveRowTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -154,11 +155,23 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
                       >
                         <button
                           type="button"
-                          onClick={() =>
+                          onPointerDown={(e) => {
+                            if (e.pointerType === "touch") {
+                              setPopupProjectId((id) =>
+                                id === project.id ? null : project.id
+                              );
+                              justOpenedProjectRowRef.current = true;
+                            }
+                          }}
+                          onClick={() => {
+                            if (justOpenedProjectRowRef.current) {
+                              justOpenedProjectRowRef.current = false;
+                              return;
+                            }
                             setPopupProjectId((id) =>
                               id === project.id ? null : project.id
-                            )
-                          }
+                            );
+                          }}
                           className={cn(
                             "flex w-full items-center justify-between gap-2 text-left",
                             itemClass
@@ -303,8 +316,8 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
                         className="block px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground"
                         onClick={() => setExperienceOpen(false)}
                       >
-                        <span className="font-medium">{exp.company}</span>
-                        <span className="text-muted-foreground"> — {exp.role}</span>
+                        <span className="block font-medium">{exp.company}</span>
+                        <span className="block text-xs text-muted-foreground">{exp.role}</span>
                       </Link>
                     ))}
                     <div className="my-1 border-t border-border/60" />
