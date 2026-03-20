@@ -10,6 +10,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FolderOpen, Briefcase, GraduationCap, ArrowRight } from "lucide-react";
 import type { Project, Experience, Education } from "@/types";
+import { MarkdownContent } from "@/components/public/MarkdownContent";
 import cercaLabsLogo from "@/components/logos/CercaLabsLogo.jpg";
 
 function formatDate(iso: string): string {
@@ -107,9 +108,9 @@ export function HomeCarousel({
             {formatDate(firstExperience.startDate)}
             {firstExperience.endDate ? ` – ${formatDate(firstExperience.endDate)}` : " – Present"}
           </p>
-          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/90">
-            {firstExperience.description}
-          </p>
+          <div className="mt-3 max-h-[4.5rem] overflow-hidden text-sm text-foreground/90">
+            <MarkdownContent content={firstExperience.description} compact />
+          </div>
         </div>
       );
     }
@@ -128,9 +129,9 @@ export function HomeCarousel({
             </div>
           )}
           <p className="font-semibold text-foreground">{firstProject.title}</p>
-          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-foreground/90">
-            {firstProject.description}
-          </p>
+          <div className="mt-2 max-h-[4.5rem] overflow-hidden text-sm text-foreground/90">
+            <MarkdownContent content={firstProject.description} compact />
+          </div>
           {firstProject.tags && firstProject.tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {firstProject.tags.slice(0, 4).map((tag) => (

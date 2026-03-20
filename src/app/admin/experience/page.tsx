@@ -32,6 +32,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, PlusCircle, Loader2 } from "lucide-react";
 import { revalidatePortfolio } from "@/app/actions/revalidate";
+import { plainTextPreview } from "@/lib/markdown";
 
 const defaultExperience: Omit<Experience, "id"> = {
   company: "",
@@ -173,7 +174,7 @@ export default function AdminExperiencePage() {
                   <TableCell className="font-medium">{x.company}</TableCell>
                   <TableCell>{x.role}</TableCell>
                   <TableCell className="max-w-[200px] truncate hidden md:table-cell text-muted-foreground">
-                    {x.description}
+                    {plainTextPreview(x.description ?? "")}
                   </TableCell>
                   <TableCell>{toInputDate(x.startDate)}</TableCell>
                   <TableCell>{toInputDate(x.endDate) || "—"}</TableCell>
@@ -207,7 +208,7 @@ export default function AdminExperiencePage() {
       )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingId ? "Edit experience" : "Add experience"}</DialogTitle>
           </DialogHeader>
@@ -233,15 +234,19 @@ export default function AdminExperiencePage() {
               />
             </div>
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Description (Markdown)</Label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Supports **bold**, *italic*, lists, numbered lists, links, and more.
+              </p>
               <textarea
                 id="description"
                 value={form.description}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, description: e.target.value }))
                 }
-                rows={3}
-                className="mt-1 w-full rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm"
+                rows={10}
+                className="mt-2 w-full rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm font-mono"
+                spellCheck={false}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">

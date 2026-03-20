@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProjectBySlug } from "@/lib/firebase/admin";
+import { MarkdownContent } from "@/components/public/MarkdownContent";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 
 export const revalidate = 3600;
@@ -37,11 +38,7 @@ export default async function ProjectSlugPage({
           </div>
         )}
         {project.description && (
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
-            <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap">
-              {project.description}
-            </p>
-          </div>
+          <MarkdownContent content={project.description} className="text-foreground/90" />
         )}
         {project.tags && project.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">

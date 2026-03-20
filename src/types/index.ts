@@ -6,8 +6,10 @@
 export interface Project {
   id: string;
   title: string;
+  /** Markdown (GFM): bold, lists, links, tables, etc. */
   description: string;
   url?: string;
+  /** Multiple tags; in admin, separate with commas, semicolons, or new lines. */
   tags?: string[];
   order?: number;
   createdAt?: string; // ISO string after serialization from Firestore Timestamp
@@ -18,6 +20,7 @@ export interface Experience {
   id: string;
   company: string;
   role: string;
+  /** Markdown (GFM): bold, lists, links, tables, etc. */
   description: string;
   startDate: string; // ISO string
   endDate?: string;   // ISO string

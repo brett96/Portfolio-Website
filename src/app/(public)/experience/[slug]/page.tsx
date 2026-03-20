@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getExperienceBySlug } from "@/lib/firebase/admin";
+import { MarkdownContent } from "@/components/public/MarkdownContent";
 import { ArrowLeft } from "lucide-react";
 
 export const revalidate = 3600;
@@ -46,10 +47,8 @@ export default async function ExperienceSlugPage({
             : " – Present"}
         </p>
         {experience.description && (
-          <div className="prose prose-neutral dark:prose-invert max-w-none pt-2">
-            <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap">
-              {experience.description}
-            </p>
+          <div className="pt-2">
+            <MarkdownContent content={experience.description} className="text-foreground/90" />
           </div>
         )}
       </article>

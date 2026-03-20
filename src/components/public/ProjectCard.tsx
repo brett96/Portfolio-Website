@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Project } from "@/types";
 import { slugify } from "@/lib/slug";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { MarkdownContent } from "@/components/public/MarkdownContent";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 
 interface ProjectCardProps {
@@ -27,9 +28,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {project.title}
           </Link>
         </CardTitle>
-        <CardDescription className="mt-2 line-clamp-3 text-sm leading-relaxed">
-          {project.description}
-        </CardDescription>
+        {project.description?.trim() ? (
+          <div className="mt-2 max-h-[5.25rem] overflow-hidden text-sm text-muted-foreground">
+            <MarkdownContent content={project.description} compact />
+          </div>
+        ) : null}
         {project.tags && project.tags.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {project.tags.map((tag) => (

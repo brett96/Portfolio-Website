@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Experience } from "@/types";
 import { slugify } from "@/lib/slug";
+import { MarkdownContent } from "@/components/public/MarkdownContent";
 
 interface ExperienceListProps {
   items: Experience[];
@@ -35,9 +36,9 @@ export function ExperienceList({ items }: ExperienceListProps) {
               {formatDate(item.startDate)}
               {item.endDate ? ` – ${formatDate(item.endDate)}` : " – Present"}
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/90">
-              {item.description}
-            </p>
+            <div className="mt-3 text-sm text-foreground/90">
+              <MarkdownContent content={item.description} compact />
+            </div>
           </Link>
         </li>
       ))}

@@ -9,6 +9,7 @@ import Link from "next/link";
 import type { Project, Experience } from "@/types";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/slug";
+import { MarkdownContent } from "@/components/public/MarkdownContent";
 import { ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 
 interface PublicHeaderProps {
@@ -190,9 +191,9 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
                         {/* Mobile: inline expanded block so list stays scrollable */}
                         {showPopup && (
                           <div className="border-t border-border/60 bg-muted/30 px-4 py-3 md:hidden">
-                            <p className="text-sm text-popover-foreground leading-relaxed line-clamp-4">
-                              {project.description}
-                            </p>
+                            <div className="max-h-40 overflow-y-auto text-sm text-popover-foreground">
+                              <MarkdownContent content={project.description} compact />
+                            </div>
                             <Link
                               href={`/projects/${projectSlug}`}
                               className="mt-3 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
@@ -235,9 +236,9 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
                     }}
                     onMouseLeave={() => setPopupProjectId(null)}
                   >
-                    <p className="text-sm text-popover-foreground leading-relaxed line-clamp-4">
-                      {project.description}
-                    </p>
+                    <div className="max-h-48 overflow-y-auto text-sm text-popover-foreground">
+                      <MarkdownContent content={project.description} compact />
+                    </div>
                     <Link
                       href={`/projects/${desktopProjectSlug}`}
                       className="mt-3 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"

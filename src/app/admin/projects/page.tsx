@@ -33,6 +33,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, PlusCircle, Loader2 } from "lucide-react";
 import { revalidatePortfolio } from "@/app/actions/revalidate";
+import { parseTagsFromInput, plainTextPreview } from "@/lib/markdown";
 
 const defaultProject: Omit<Project, "id"> = {
   title: "",
@@ -146,10 +147,7 @@ export default function AdminProjectsPage() {
   const setTagsStr = (s: string) =>
     setForm((f) => ({
       ...f,
-      tags: s
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
+      tags: parseTagsFromInput(s),
     }));
 
   return (
@@ -173,6 +171,7 @@ export default function AdminProjectsPage() {
               <TableRow>
                 <TableHead className="w-12">Image</TableHead>
                 <TableHead>Title</TableHead>
+                <TableHead className="hidden lg:table-cell max-w-[140px]">Tags</TableHead>
                 <TableHead className="max-w-[200px] hidden md:table-cell">Description</TableHead>
                 <TableHead className="w-20">Order</TableHead>
                 <TableHead className="w-24">Actions</TableHead>
@@ -193,8 +192,11 @@ export default function AdminProjectsPage() {
                     )}
                   </TableCell>
                   <TableCell className="font-medium">{p.title}</TableCell>
+                  <TableCell className="hidden lg:table-cell max-w-[140px] text-xs text-muted-foreground">
+                    {p.tags?.length ? p.tags.join(", ") : "—"}
+                  </TableCell>
                   <TableCell className="max-w-[200px] truncate hidden md:table-cell text-muted-foreground">
-                    {p.description}
+                    {plainTextPreview(p.description ?? "")}
                   </TableCell>
                   <TableCell>{p.order ?? 0}</TableCell>
                   <TableCell>
@@ -226,7 +228,7 @@ export default function AdminProjectsPage() {
       )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingId ? "Edit project" : "Add project"}</DialogTitle>
           </DialogHeader>
@@ -242,15 +244,19 @@ export default function AdminProjectsPage() {
               />
             </div>
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Description (Markdown)</Label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Supports **bold**, *italic*, ~~strikethrough~~, bullet and numbered lists, links, tables, and more.
+              </p>
               <textarea
                 id="description"
                 value={form.description}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, description: e.target.value }))
                 }
-                rows={3}
-                className="mt-1 w-full rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm"
+                rows={10}
+                className="mt-2 w-full rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm font-mono"
+                spellCheck={false}
               />
             </div>
             <div>
@@ -264,13 +270,16 @@ export default function AdminProjectsPage() {
               />
             </div>
             <div>
-              <Label htmlFor="tags">Tags (comma-separated)</Label>
+              <Label htmlFor="tags">Tags</Label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Multiple tags: separate with commas, semicolons, or new lines (e.g. React, Next.js, or one tag per line).
+              </p>
               <Input
                 id="tags"
                 value={tagsStr}
                 onChange={(e) => setTagsStr(e.target.value)}
-                placeholder="React, TypeScript"
-                className="mt-1"
+                placeholder="React, TypeScript, Firebase"
+                className="mt-2"
               />
             </div>
             <div>
