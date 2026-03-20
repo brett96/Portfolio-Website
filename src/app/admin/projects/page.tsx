@@ -50,6 +50,8 @@ export default function AdminProjectsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(defaultProject);
+  /** Raw tags field text — do not parse on each keystroke or commas/spaces disappear while typing */
+  const [tagsInput, setTagsInput] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -72,6 +74,7 @@ export default function AdminProjectsPage() {
   const openCreate = () => {
     setEditingId(null);
     setForm({ ...defaultProject, order: items.length });
+    setTagsInput("");
     setImageFile(null);
     setDialogOpen(true);
   };
@@ -86,6 +89,7 @@ export default function AdminProjectsPage() {
       order: p.order ?? 0,
       imageUrl: p.imageUrl ?? "",
     });
+    setTagsInput((p.tags ?? []).join(", "));
     setImageFile(null);
     setDialogOpen(true);
   };
@@ -105,11 +109,12 @@ export default function AdminProjectsPage() {
           editingId ?? undefined
         );
       }
+      const parsedTags = parseTagsFromInput(tagsInput);
       const payload = {
         title: form.title.trim(),
         description: form.description?.trim() ?? "",
         url: form.url?.trim() || undefined,
-        tags: form.tags?.length ? form.tags : undefined,
+        tags: parsedTags.length ? parsedTags : undefined,
         order: form.order ?? 0,
         imageUrl: imageUrl || undefined,
       };
@@ -142,13 +147,6 @@ export default function AdminProjectsPage() {
       toast.error("Failed to delete");
     }
   };
-
-  const tagsStr = Array.isArray(form.tags) ? form.tags.join(", ") : "";
-  const setTagsStr = (s: string) =>
-    setForm((f) => ({
-      ...f,
-      tags: parseTagsFromInput(s),
-    }));
 
   return (
     <div className="space-y-6">
@@ -276,8 +274,8 @@ export default function AdminProjectsPage() {
               </p>
               <Input
                 id="tags"
-                value={tagsStr}
-                onChange={(e) => setTagsStr(e.target.value)}
+                value={tagsInput}
+                onChange={(e) => setTagsInput(e.target.value)}
                 placeholder="React, TypeScript, Firebase"
                 className="mt-2"
               />
