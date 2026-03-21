@@ -66,12 +66,19 @@ export function PublicHeader({ projects, experience, onOpenContact }: PublicHead
 
   return (
     <header className="sticky top-0 z-10 overflow-visible border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container mx-auto flex h-14 max-w-4xl items-center justify-between px-6">
+      <div className="container mx-auto flex h-14 max-w-4xl items-center justify-between pl-3 pr-6 sm:px-6">
         <Link
           href="/"
-          className="font-semibold text-foreground no-underline hover:text-foreground/90 transition-colors"
+          aria-label="Brett Tomita — Home"
+          className="mr-5 flex shrink-0 items-center font-semibold text-foreground no-underline transition-colors hover:text-foreground/90 md:mr-0"
         >
-          Brett Tomita
+          <span
+            className="flex size-9 items-center justify-center rounded-full border border-border/80 bg-muted/60 text-xs font-semibold tracking-tight md:hidden"
+            aria-hidden
+          >
+            BT
+          </span>
+          <span className="hidden md:inline">Brett Tomita</span>
         </Link>
         <nav className="flex items-center gap-6">
           <div className="relative" ref={projectsRef}>

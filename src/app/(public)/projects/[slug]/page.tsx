@@ -25,9 +25,26 @@ export default async function ProjectSlugPage({
         Back to projects
       </Link>
       <article className="space-y-6">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          {project.title}
-        </h1>
+        <header
+          className="sticky top-14 z-[9] -mx-6 border-b border-border/60 bg-background/95 px-6 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:py-4"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:min-w-0 sm:flex-1 sm:pr-4">
+              {project.title}
+            </h1>
+            {project.url?.trim() && (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-fit shrink-0 items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                View project
+                <ExternalLink className="size-4" />
+              </a>
+            )}
+          </div>
+        </header>
         {project.imageUrl && (
           <div className="aspect-video w-full max-w-2xl overflow-hidden rounded-lg bg-muted">
             <img
@@ -51,17 +68,6 @@ export default async function ProjectSlugPage({
               </span>
             ))}
           </div>
-        )}
-        {project.url?.trim() && (
-          <a
-            href={project.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
-          >
-            View project
-            <ExternalLink className="size-4" />
-          </a>
         )}
       </article>
     </div>
