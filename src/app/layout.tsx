@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { PageTransitionWrapper } from "@/components/PageTransitionWrapper";
@@ -29,6 +30,7 @@ export default function RootLayout({
         <AuthProvider>
           <PageTransitionWrapper>{children}</PageTransitionWrapper>
           <Toaster />
+          <Analytics />
         </AuthProvider>
       </body>
     </html>
