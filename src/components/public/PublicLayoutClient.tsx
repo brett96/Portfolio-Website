@@ -65,12 +65,14 @@ export function PublicLayoutClient({
               >
                 Projects
               </Link>
-              <Link
-                href="/experience"
+              <a
+                href="https://donate.stripe.com/7sYcN42Qq9Nl1zheOV2cg01"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Experience
-              </Link>
+                Donate
+              </a>
               <button
                 type="button"
                 onClick={() => setContactOpen(true)}
