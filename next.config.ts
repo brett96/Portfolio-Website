@@ -11,7 +11,9 @@ const nextConfig: NextConfig = {
       {
         source: "/edc",
         destination: "/edc/",
-        permanent: true,
+        // 307 avoids aggressive caching of a bad redirect during iteration;
+        // switch back to permanent: true once stable if you want cache behavior.
+        permanent: false,
       },
     ];
   },
@@ -19,7 +21,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/edc",
+        source: "/edc/",
         destination: "https://edc-vegas-2026.vercel.app/index.html",
       },
       {
