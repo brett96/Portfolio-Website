@@ -12,6 +12,19 @@ import { SESSION_COOKIE_NAME } from "@/lib/auth-constants";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Force /edc → /edc/ so the proxied PWA's relative asset URLs (./css/app.css,
+  // ./js/app.js, etc.) resolve against /edc/ instead of the site root.
+  // Done in middleware with a strict equality check because Next.js's
+  // next.config.ts `redirects` source matching treats trailing slashes as
+  // optional, which caused /edc/ to match `source: "/edc"` and created an
+  // infinite redirect loop.
+  if (pathname === "/edc") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/edc/";
+    return NextResponse.redirect(url, 308);
+  }
+
   if (pathname.startsWith("/admin")) {
     const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME);
     if (!sessionCookie?.value) {
@@ -23,5 +36,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*"],
+  matcher: ["/edc", "/admin", "/admin/:path*"],
 };
