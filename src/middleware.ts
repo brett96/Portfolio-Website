@@ -19,10 +19,13 @@ export function middleware(request: NextRequest) {
   // next.config.ts `redirects` source matching treats trailing slashes as
   // optional, which caused /edc/ to match `source: "/edc"` and created an
   // infinite redirect loop.
+  // Use the standard URL constructor, not NextURL.clone(): NextURL formats
+  // href without a trailing slash unless trailingSlash: true, which strips
+  // "/edc/" back to "/edc" and causes an infinite 308 loop with
+  // skipTrailingSlashRedirect (see vercel/next.js#66738).
   if (pathname === "/edc") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/edc/";
-    return NextResponse.redirect(url, 308);
+    const dest = new URL("/edc/", request.nextUrl.origin);
+    return NextResponse.redirect(dest.toString(), 308);
   }
 
   if (pathname.startsWith("/admin")) {
