@@ -24,11 +24,13 @@ import {
   Menu,
   Type,
   FileDown,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 
 const NAV_LINKS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/edc-analytics", label: "EDC analytics", icon: BarChart3 },
   { href: "/admin/hero", label: "Site header", icon: Type },
   { href: "/admin/projects", label: "Projects", icon: FolderOpen },
   { href: "/admin/experience", label: "Experience", icon: Briefcase },

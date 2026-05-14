@@ -3,14 +3,39 @@
  * cookie exists; do not verify the token here (firebase-admin is not available on Edge).
  * Secure verification happens in src/app/admin/layout.tsx with admin.auth().verifySessionCookie().
  * Full implementation in Phase 3.
+ *
+ * EDC page views: logs one count per HTML navigation to /edc/ (see scheduleEdcPageViewLog).
  */
 
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import type { NextRequest, NextFetchEvent } from "next/server";
 
 import { SESSION_COOKIE_NAME } from "@/lib/auth-constants";
 
-export function middleware(request: NextRequest) {
+function scheduleEdcPageViewLog(request: NextRequest, context: NextFetchEvent) {
+  const secret = process.env.EDC_ANALYTICS_INGEST_SECRET;
+  if (!secret) return;
+  if (request.headers.get("sec-fetch-dest") !== "document") return;
+  const ua = request.headers.get("user-agent") ?? "";
+  if (
+    /bot|crawl|spider|slurp|bingpreview|facebookexternal|embedly|lighthouse|pingdom|prerender|headlesschrome|preview/i.test(
+      ua
+    )
+  ) {
+    return;
+  }
+  const target = new URL("/api/analytics/edc", request.nextUrl.origin);
+  context.waitUntil(
+    fetch(target, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secret}`,
+      },
+    }).catch(() => undefined)
+  );
+}
+
+export async function middleware(request: NextRequest, context: NextFetchEvent) {
   const { pathname } = request.nextUrl;
 
   // Force /edc → /edc/ so the proxied PWA's relative asset URLs (./css/app.css,
@@ -28,6 +53,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(dest.toString(), 308);
   }
 
+  if (pathname === "/edc/") {
+    scheduleEdcPageViewLog(request, context);
+  }
+
   if (pathname.startsWith("/admin")) {
     const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME);
     if (!sessionCookie?.value) {
@@ -39,5 +68,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/edc", "/admin", "/admin/:path*"],
+  matcher: ["/edc", "/edc/", "/admin", "/admin/:path*"],
 };

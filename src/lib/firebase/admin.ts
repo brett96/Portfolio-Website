@@ -217,3 +217,74 @@ export async function getResume(): Promise<Resume | null> {
     return null;
   }
 }
+
+/** UTC yyyy-mm-dd document ids under `edcAnalyticsDaily`. */
+const EDC_ANALYTICS_DAILY = "edcAnalyticsDaily";
+
+export type EdcDailyAnalyticsRow = {
+  date: string;
+  pageViews: number;
+};
+
+function utcDayKey(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function lastNDaysUtcKeys(n: number): string[] {
+  const keys: string[] = [];
+  const base = new Date();
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(
+      Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate() - i)
+    );
+    keys.push(utcDayKey(d));
+  }
+  return keys;
+}
+
+/**
+ * Increment EDC daily page-view counter (Firestore). Writes only from the
+ * ingest API route (Bearer EDC_ANALYTICS_INGEST_SECRET).
+ */
+export async function recordEdcPageView(): Promise<boolean> {
+  const db = getAdminDb();
+  if (!db) return false;
+  const dayKey = utcDayKey(new Date());
+  const ref = db.collection(EDC_ANALYTICS_DAILY).doc(dayKey);
+  try {
+    await ref.set(
+      {
+        pageViews: admin.firestore.FieldValue.increment(1),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Last `dayCount` UTC days (oldest → newest) for charts. */
+export async function getEdcAnalyticsDaily(
+  dayCount: number
+): Promise<EdcDailyAnalyticsRow[]> {
+  const db = getAdminDb();
+  const keys = lastNDaysUtcKeys(dayCount);
+  if (!db) {
+    return keys.map((date) => ({ date, pageViews: 0 }));
+  }
+  try {
+    const refs = keys.map((k) => db.collection(EDC_ANALYTICS_DAILY).doc(k));
+    const snaps = await db.getAll(...refs);
+    return keys.map((date, i) => {
+      const data = snaps[i].exists ? snaps[i].data() : undefined;
+      return {
+        date,
+        pageViews: typeof data?.pageViews === "number" ? data.pageViews : 0,
+      };
+    });
+  } catch {
+    return keys.map((date) => ({ date, pageViews: 0 }));
+  }
+}

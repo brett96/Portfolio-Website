@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { getProjects, getExperience, getEducation } from "@/lib/firebase/admin";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FolderOpen, Briefcase, GraduationCap, ArrowRight, FileText, Type, FileDown } from "lucide-react";
+import {
+  FolderOpen,
+  Briefcase,
+  GraduationCap,
+  ArrowRight,
+  FileText,
+  Type,
+  FileDown,
+  BarChart3,
+} from "lucide-react";
 
 export default async function AdminDashboardPage() {
   const [projects, experience, education] = await Promise.all([
@@ -12,12 +20,19 @@ export default async function AdminDashboardPage() {
   ]);
 
   const links = [
-    { href: "/admin/hero", label: "Site header", count: null, icon: Type },
-    { href: "/admin/projects", label: "Projects", count: projects.length, icon: FolderOpen },
-    { href: "/admin/experience", label: "Experience", count: experience.length, icon: Briefcase },
-    { href: "/admin/education", label: "Education", count: education.length, icon: GraduationCap },
-    { href: "/admin/about", label: "About", count: null, icon: FileText },
-    { href: "/admin/resume", label: "Resume", count: null, icon: FileDown },
+    {
+      href: "/admin/edc-analytics",
+      label: "EDC analytics",
+      count: null as number | null,
+      subtext: "/edc traffic",
+      icon: BarChart3,
+    },
+    { href: "/admin/hero", label: "Site header", count: null, subtext: "Home page section", icon: Type },
+    { href: "/admin/projects", label: "Projects", count: projects.length, subtext: null, icon: FolderOpen },
+    { href: "/admin/experience", label: "Experience", count: experience.length, subtext: null, icon: Briefcase },
+    { href: "/admin/education", label: "Education", count: education.length, subtext: null, icon: GraduationCap },
+    { href: "/admin/about", label: "About", count: null, subtext: "Home page section", icon: FileText },
+    { href: "/admin/resume", label: "Resume", count: null, subtext: "Home page section", icon: FileDown },
   ];
 
   return (
@@ -32,7 +47,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {links.map(({ href, label, count, icon: Icon }) => (
+        {links.map(({ href, label, count, subtext, icon: Icon }) => (
           <Card key={href} className="border-border/80 transition-shadow hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base font-medium">{label}</CardTitle>
@@ -45,7 +60,7 @@ export default async function AdminDashboardPage() {
                   <p className="text-xs text-muted-foreground">entries</p>
                 </>
               ) : (
-                <p className="text-xs text-muted-foreground">Home page section</p>
+                <p className="text-xs text-muted-foreground">{subtext ?? "Home page section"}</p>
               )}
               <Link
                 href={href}
