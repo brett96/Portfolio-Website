@@ -12,6 +12,7 @@ export default async function AdminEdcAnalyticsPage() {
   const last7 = sumPageViews(rows, 7);
   const last30 = sumPageViews(rows, DAYS);
   const maxPv = Math.max(...rows.map((r) => r.pageViews), 0);
+  const ingestConfigured = Boolean(process.env.EDC_ANALYTICS_INGEST_SECRET?.length);
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -80,8 +81,25 @@ export default async function AdminEdcAnalyticsPage() {
         <CardHeader>
           <CardTitle className="text-base">Configuration</CardTitle>
           <CardDescription>
-            Set <code className="text-foreground">EDC_ANALYTICS_INGEST_SECRET</code> on Vercel so
-            middleware can record page loads to Firestore.
+            {ingestConfigured ? (
+              <>
+                <span className="text-foreground">
+                  Ingest secret is present on this deployment
+                </span>{" "}
+                (the value is never shown here). Page loads are recorded when visitors open{" "}
+                <code className="text-foreground">/edc/</code>. If counts stay at zero after
+                traffic, trigger a new production deploy after saving env vars and confirm the
+                variable applies to <span className="font-medium">Production</span>, not only
+                Preview.
+              </>
+            ) : (
+              <>
+                Add{" "}
+                <code className="text-foreground">EDC_ANALYTICS_INGEST_SECRET</code> in this
+                project&apos;s Vercel environment variables, then redeploy. Only the portfolio app
+                needs it—not the EDC app.
+              </>
+            )}
           </CardDescription>
         </CardHeader>
       </Card>
